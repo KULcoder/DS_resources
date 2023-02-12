@@ -1,0 +1,313 @@
+---
+title: "An Simple Introduction to R"
+output: pdf_document
+date: "2023-01-16"
+author: Keyu Long
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Basic Data Types
+
+## Assign Value to Variables
+
+```{r}
+x = 4
+y <- 2
+# both work
+```
+
+## Numeric Operation
+
+```{r}
+x + y 
+x - y
+x * y
+x / y
+x ^ y
+```
+
+## Characteristic
+
+```{r}
+z = 'math'
+z = "math" # both are the same
+u = '1'
+```
+
+## Logical
+
+```{r}
+a = TRUE
+b = T
+c = F
+```
+
+## Special
+
+```{r}
+w = NA # not a number / represnt NONE in R
+```
+
+## Class
+
+```{r}
+# used to see the type of variable
+class(x)
+class(z)
+class(u)
+class(w)
+```
+
+### Type Conversion
+
+```{r}
+v = as.numeric(u) # convert from a char to number, can only convert reasonable values
+class(v)
+is.numeric(v) 
+```
+
+# Logical Operations
+
+## Simple Comparisons
+
+```{r}
+x == 4 # equal to
+
+x != 1 # not equal to
+
+!(x == 4) # negation of equal
+
+x >= 1
+y < 1
+```
+
+## Multiple Logical Operations
+
+```{r}
+x > 3 & y > 1 # and 
+x > 3 | y < 0 # or
+```
+
+# Data Structure
+
+## Vectors
+
+```{r}
+# define vectors
+vec1 = c(45, 43, 46, 48, 51, 46, 50, 47, 46, 45)
+vec2 = 1:10 # R does not support syntax like 1:20:2, rather use seq()
+vec3 = seq(1, 20, 2)
+
+# to seek for help
+help('seq')
+
+vec4 = c('math 170A', 'math 170B', 'math 170C', 'math 180A', 'math 180B', 'math 180C', 'math 181A', 'math 181B', 'math 183', 'math 185')
+```
+
+### Operations
+
+```{r}
+# Basic Functions
+sum(vec2)
+mean(vec1)
+median(vec1)
+max(vec1)
+min(vec1)
+var(vec1)
+summary(vec1) # summary returns all of the above info
+```
+
+```{r}
+# standard deviation
+sd(vec1)
+
+# length of a vector
+length(vec4)
+```
+
+```{r}
+# indexing of vector
+
+# get the i-th value
+vec[2]
+vec1[c(1, 3, 5)] # get the 1st, 3rd, 5th element at the same time
+
+# find the index
+which(vec1 == 45)
+which(vec1 == max(vec1)) # find the index of the max value
+```
+
+### Sort
+
+```{r}
+order(vec1, decreasing = T) # return ordered index
+```
+
+### Naming
+
+```{r}
+# name the value of each element
+vec5 = c(90, 91, 95, 96, 98, 85, 93, 95, 92, 88)
+names(vec5) <- vec4
+vec5
+```
+
+### Between Vectors
+
+```{r}
+# direct operation between vectors are element-wised
+vec1 + vec2
+vec1 - vec3
+vec1 * vec2 # Hadamard product not Dot product
+as.numeric(vec1 %*% vec2) # dot product and get the element out
+```
+
+## Matrices
+
+```{r}
+help('matrix')
+```
+
+```{r}
+# declare new matrices
+A = matrix(1:6, nrow = 2, ncol = 3) # default: by column
+B = matrix(1:6, nrow = 2, ncol = 3, byrow = T)
+C = matrix(2:7, nrow = 2, ncol = 3)
+```
+
+### Operations
+
+```{r}
+# Basic functions
+t(A) # transpose
+dim(A) # dimension of a matrix
+
+# Again, direct operations are element-wised
+A*C # Hadamard product
+
+# dot product
+A %*% t(C)
+```
+
+## Table
+
+```{r}
+sample_data1 = rpois(100, 5)
+sample_data2 = rpois(100, 2)
+ts = table(sample_data1) # count frequency
+ts
+sample_data1
+```
+
+# Packages Management
+
+```{r}
+# install packages
+install.packages('pracma')
+# load pakcages
+library(pracma)
+
+# then we can use product method
+dot(vec1, vec2)
+
+# unload / detach
+detach('package:pracma')
+```
+
+# Data Frame
+
+```{r}
+library(MASS)
+dataset = Cars93 # specific dataset
+class(dataset)
+```
+
+```{r}
+# check the strcuture of a dataframe
+str(dataset)
+```
+
+```{r}
+# summary statistics
+summary(dataset)
+```
+
+## Operations
+
+```{r}
+# visit one variable
+dataset$Weight
+```
+
+```{r}
+#extract a varible
+weight <- dataset$Weight
+mpg_city <- dataset$MPG.city
+```
+
+```{r}
+#attach a dataset / directly load it
+attach(Cars93)
+Weight
+MPG.city
+```
+
+```{r}
+# detach the dataset
+detach(Cars93)
+```
+
+# Plots
+
+### Histogram
+
+```{r}
+# for numeric variables
+hist(dataset$Weight)
+dev.off() # clear all plots
+```
+
+```{r}
+# add titles
+hist(dataset$Weight, main = "Histogram of Car Weights", xlab = 'Weight', col = 'grey')
+```
+
+### Barplot
+
+```{r}
+# for categorical variables
+manu <- table(dataset$Manufacturer)
+JP_cars <- which(names(manu) %in% c('Honda', 'Acura', 'Toyota', 'Lexus', 'Nissan', 'Infiniti'))
+barplot(manu[JP_cars], main = 'Japenese Cars',
+        xlab = 'Manufacturers', ylab = 'Frequency', axes = T, axis.lty = 1)
+```
+
+### Boxplot
+
+```{r}
+boxplot(mpg_city)
+boxplot(mpg_city, xlab = "MPG in City", col = 'yellow', outpch = 8, outcol = 'red')
+boxplot(mpg_city, xlab = "MPG in City", col = 'yellow', outpch = '*', outcol = 'red')
+```
+
+### Scatter Plot
+
+```{r}
+plot(weight, mpg_city)
+plot(weight, mpg_city, main = "relation btw car weight & mpg in city",
+     xlab = 'car weight', ylab = 'mpg in city', pch = 19, cex = 0.8, col = 'darkgreen')
+```
+
+# Linear Regression
+
+```{r}
+# draw the scatter first
+plot(weight, mpg_city, main = "relation btw car weight & mpg in city",
+     xlab = 'car weight', ylab = 'mpg in city', pch = 19, cex = 0.8, col = 'darkgreen')
+
+lin <- lm(formula = mpg_city ~ weight)
+abline(lin, lwd = 1.5, col = 'red') # draw the fitting line
+```
